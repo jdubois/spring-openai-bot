@@ -67,19 +67,10 @@ resource "azurerm_container_app" "application" {
 
   lifecycle {
     ignore_changes = [
+      secret,
+      registry,
       template.0.container["image"]
     ]
-  }
-
-  secret {
-    name  = "registry-credentials"
-    value = azurerm_container_registry.container-registry.admin_password
-  }
-
-  registry {
-    server               = azurerm_container_registry.container-registry.login_server
-    username             = azurerm_container_registry.container-registry.admin_username
-    password_secret_name = "registry-credentials"
   }
 
   ingress {
