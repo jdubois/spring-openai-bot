@@ -40,7 +40,7 @@ jobs:
           creds: ${{ inputs.azure_credentials }}
       - name: Push to Azure Container Registry
         env:
-          AZURE_CREDENTIALS: ${{ inputs.azure_credentials }}
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
         run: |
           az acr login -n ${{ needs.manage-infrastructure.outputs.container_registry_name }}.azurecr.io
           docker push ${{ needs.manage-infrastructure.outputs.container_registry_name }}.azurecr.io/${{ needs.manage-infrastructure.outputs.application_name }}/${{ needs.manage-infrastructure.outputs.application_name }}:${{ github.sha }}
