@@ -94,7 +94,7 @@ resource "azurerm_container_app" "application" {
   template {
     container {
       name   = azurecaf_name.application.result
-      image  = "crspringo82433878dev.azurecr.io/ca-spring-o-8243-3878-dev/ca-spring-o-8243-3878-dev:a1ea031ff8e2192074fb9859ae914986aa4cd2b8"
+      image  = "ghcr.io/microsoft/nubesgen/nubesgen-native:main"
       cpu    = 0.25
       memory = "0.5Gi"
     }
