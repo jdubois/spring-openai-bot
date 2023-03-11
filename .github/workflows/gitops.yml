@@ -39,14 +39,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Push to Azure Container Registry
-        env:
-          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
         run: |
           az acr login -n ${{ needs.manage-infrastructure.outputs.container_registry_name }}.azurecr.io
           docker push ${{ needs.manage-infrastructure.outputs.container_registry_name }}.azurecr.io/${{ needs.manage-infrastructure.outputs.application_name }}/${{ needs.manage-infrastructure.outputs.application_name }}:${{ github.sha }}
         shell: bash
       - name: Deploy to Container App
         uses: azure/CLI@v1
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
