@@ -48,8 +48,8 @@ jobs:
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
-            REGISTRY_USERNAME = ${az acr credential show -n ${{ needs.manage-infrastructure.outputs.container_registry_name }} -g ${{ needs.manage-infrastructure.outputs.resource_group }} --query username --output tsv}
-            REGISTRY_PASSWORD = ${az acr credential show -n ${{ needs.manage-infrastructure.outputs.container_registry_name }} -g ${{ needs.manage-infrastructure.outputs.resource_group }} --query passwords[0].value --output tsv}
+            REGISTRY_USERNAME = $(az acr credential show -n ${{ needs.manage-infrastructure.outputs.container_registry_name }} -g ${{ needs.manage-infrastructure.outputs.resource_group }} --query username --output tsv)
+            REGISTRY_PASSWORD = $(az acr credential show -n ${{ needs.manage-infrastructure.outputs.container_registry_name }} -g ${{ needs.manage-infrastructure.outputs.resource_group }} --query passwords[0].value --output tsv)
             az containerapp registry set --server ${{ needs.manage-infrastructure.outputs.container_registry_name }}.azurecr.io --username $REGISTRY_USERNAME --password $REGISTRY_PASSWORD
             az containerapp update -n ${{ needs.manage-infrastructure.outputs.application_name }} -g ${{ needs.manage-infrastructure.outputs.resource_group }} --image ${{ needs.manage-infrastructure.outputs.container_registry_name }}/${{ needs.manage-infrastructure.outputs.application_name }}/${{ needs.manage-infrastructure.outputs.application_name }}:${{ github.sha }}
   display-information:
