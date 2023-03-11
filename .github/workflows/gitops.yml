@@ -45,8 +45,6 @@ jobs:
         shell: bash
       - name: Deploy to Container App
         uses: azure/CLI@v1
-        env:
-          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
