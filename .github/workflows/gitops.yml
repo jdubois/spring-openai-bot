@@ -48,6 +48,7 @@ jobs:
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
+            
             az containerapp update \
               -n ${{ needs.manage-infrastructure.outputs.application_name }} \
               -g ${{ needs.manage-infrastructure.outputs.resource_group }} \
