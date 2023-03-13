@@ -73,6 +73,17 @@ resource "azurerm_container_app" "application" {
     ]
   }
 
+  secret {
+    name  = "registry-credentials"
+    value = azurerm_container_registry.container-registry.admin_password
+  }
+
+  registry {
+    server               = azurerm_container_registry.container-registry.login_server
+    username             = azurerm_container_registry.container-registry.admin_username
+    password_secret_name = "registry-credentials"
+  }
+
   ingress {
     external_enabled = true
     target_port      = 8080
