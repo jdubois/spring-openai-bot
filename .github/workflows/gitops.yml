@@ -27,7 +27,6 @@ jobs:
           azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
           tf_storage_account: ${{ secrets.TF_STORAGE_ACCOUNT }}
   build:
-    needs: [manage-infrastructure]
     runs-on: ubuntu-20.04
     steps:
       - name: Build a Java native image using Maven
@@ -48,6 +47,7 @@ jobs:
           path: /tmp/package.tar
   deploy:
     needs: [manage-infrastructure,build]
+    runs-on: ubuntu-20.04
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
