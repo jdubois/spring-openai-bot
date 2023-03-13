@@ -26,14 +26,39 @@ jobs:
         with:
           azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
           tf_storage_account: ${{ secrets.TF_STORAGE_ACCOUNT }}
-  build-and-deploy:
+  build:
     needs: [manage-infrastructure]
     runs-on: ubuntu-20.04
     steps:
       - name: Build a Java native image using Maven
         uses: microsoft/nubesgen-actions/gitops-build-java-maven@v0.10.0
         with:
-          build_command: './mvnw -Pnative spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ needs.manage-infrastructure.outputs.container_registry_name }}.azurecr.io/${{ needs.manage-infrastructure.outputs.application_name }}/${{ needs.manage-infrastructure.outputs.application_name }}:${{ github.sha }}'
+          build_command: './mvnw -Pnative spring-boot:build-image -DskipTests -Dspring-boot.build-image.publish=false -Dspring-boot.build-image.imageName=${{ needs.manage-infrastructure.outputs.container_registry_name }}.azurecr.io/${{ needs.manage-infrastructure.outputs.application_name }}/${{ needs.manage-infrastructure.outputs.application_name }}:${{ github.sha }}'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Export Docker image
+        uses: docker/build-push-action@v4
+        with:
+          tags: '${{ needs.manage-infrastructure.outputs.container_registry_name }}.azurecr.io/${{ needs.manage-infrastructure.outputs.application_name }}/${{ needs.manage-infrastructure.outputs.application_name }}:${{ github.sha }}'
+          outputs: type=docker,dest=/tmp/package.tar
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-image
+          path: /tmp/package.tar
+  deploy:
+    needs: [manage-infrastructure,build]
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: docker-image
+          path: /tmp
+      - name: Load image
+        run: |
+          docker load --input /tmp/package.tar
       - name: Login to Azure
         uses: azure/login@v1
         with:
@@ -48,7 +73,6 @@ jobs:
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
-            
             az containerapp update \
               -n ${{ needs.manage-infrastructure.outputs.application_name }} \
               -g ${{ needs.manage-infrastructure.outputs.resource_group }} \
