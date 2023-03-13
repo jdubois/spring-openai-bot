@@ -31,14 +31,14 @@ jobs:
     steps:
       - name: Build a Docker image using Java
         id: build
-        uses: jdubois/nubesgen-actions/gitops-build-container-java@main
+        uses: jdubois/nubesgen-actions-1/gitops-build-container-java@main
   deploy:
     needs: [manage-infrastructure,build]
     runs-on: ubuntu-20.04
     steps:
       - name: Deploy a Docker image to Azure Container Apps
         id: build
-        uses: jdubois/nubesgen-actions/gitops-deploy-to-container-apps@main
+        uses: jdubois/nubesgen-actions-1/gitops-deploy-to-container-apps@main
         with:
           azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
           application_name: ${{ needs.manage-infrastructure.outputs.application_name }}
